@@ -39,12 +39,11 @@ class CitiesActivity : AppCompatActivity() {
         citiesLV.adapter = CustomAdapter(this)
 
         citiesLV.setOnItemClickListener { parent, _, position, _ ->
-            val selectedItem = parent.getItemAtPosition(position) as Int
-            println(selectedItem)
-            //val edit = shared.edit()
-            //edit.putString("city" , selectedItem)
-            //edit.apply()
-            //startActivity(Intent(this@CitiesActivity, MainActivity::class.java))
+            val selectedItem = parent.getItemAtPosition(position) as String
+            val edit = shared.edit()
+            edit.putString("city" , selectedItem)
+            edit.apply()
+            startActivity(Intent(this@CitiesActivity, MainActivity::class.java))
         }
     }
 
@@ -73,7 +72,7 @@ class CitiesActivity : AppCompatActivity() {
         }
 
         override fun getItem(position: Int): Any {
-            val temp1 = cities[position] + countries[position]
+            val temp1 = cities[position] + "," + countries[position]
             val temp2 = temp1.filter { !it.isWhitespace() }
             return temp2.lowercase()
         }

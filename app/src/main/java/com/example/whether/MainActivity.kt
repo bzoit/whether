@@ -15,9 +15,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //shared = getSharedPreferences("CityDB" , Context.MODE_PRIVATE)
-        //val city = shared.getString("city", Context.MODE_PRIVATE)
-        //println(city)
+        shared = getSharedPreferences("CityDB" , Context.MODE_PRIVATE)
+        val city = shared.getString("city", Context.MODE_PRIVATE.toString())
+        println(city)
     }
 
     fun switchAway(v: View?) {
