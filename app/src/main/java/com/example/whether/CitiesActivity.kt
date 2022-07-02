@@ -1,6 +1,8 @@
 package com.example.whether
 
 import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,33 +14,37 @@ import androidx.appcompat.app.AppCompatActivity
 
 class CitiesActivity : AppCompatActivity() {
 
+    lateinit var shared : SharedPreferences
+
     val cities = arrayOf(
         "Philadelphia", "Detroit", "New York City", "Mumbai"
     )
 
     val countries = arrayOf(
-        "USA", "USA", "USA", "India"
+        "US", "US", "US", "IN"
     )
 
     val states = arrayOf(
         "PA", "MI", "NY", ""
     )
 
-    val codes = arrayOf(
-        "9018", "9712", "2765", "7839"
-    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cities)
+
+        shared = getSharedPreferences("CityDB" , Context.MODE_PRIVATE)
 
         val citiesLV = findViewById<ListView>(R.id.citiesList)
 
         citiesLV.adapter = CustomAdapter(this)
 
         citiesLV.setOnItemClickListener { parent, _, position, _ ->
-            val selectedItem = parent.getItemAtPosition(position) as String
+            val selectedItem = parent.getItemAtPosition(position) as Int
             println(selectedItem)
+            //val edit = shared.edit()
+            //edit.putString("city" , selectedItem)
+            //edit.apply()
+            //startActivity(Intent(this@CitiesActivity, MainActivity::class.java))
         }
     }
 
@@ -54,8 +60,6 @@ class CitiesActivity : AppCompatActivity() {
 
         val states = mainClass.states
 
-        val codes = mainClass.codes
-
         init {
             for (i in states.indices) {
                 if(states[i] !== "") {
@@ -69,7 +73,9 @@ class CitiesActivity : AppCompatActivity() {
         }
 
         override fun getItem(position: Int): Any {
-            return codes[position]
+            val temp1 = cities[position] + countries[position]
+            val temp2 = temp1.filter { !it.isWhitespace() }
+            return temp2.lowercase()
         }
 
         override fun getItemId(position: Int): Long {
