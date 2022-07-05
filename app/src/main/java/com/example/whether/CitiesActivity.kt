@@ -17,15 +17,19 @@ class CitiesActivity : AppCompatActivity() {
     lateinit var shared : SharedPreferences
 
     val cities = arrayOf(
-        "Philadelphia", "Detroit", "New York City", "Mumbai"
+        "Philadelphia", "Fairbanks"
     )
 
     val countries = arrayOf(
-        "US", "US", "US", "IN"
+        "US", "US"
     )
 
     val states = arrayOf(
-        "PA", "MI", "NY", ""
+        "PA", "AK"
+    )
+
+    val codes = arrayOf(
+        "350540", "346836"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,8 +44,10 @@ class CitiesActivity : AppCompatActivity() {
 
         citiesLV.setOnItemClickListener { parent, _, position, _ ->
             val selectedItem = parent.getItemAtPosition(position) as String
+            val cityArr = selectedItem.split("&").toTypedArray()
             val edit = shared.edit()
-            edit.putString("city" , selectedItem)
+            edit.putString("code" , cityArr[0] as String?)
+            edit.putString("cityText", cityArr[1] as String?)
             edit.apply()
             startActivity(Intent(this@CitiesActivity, MainActivity::class.java))
         }
@@ -54,6 +60,8 @@ class CitiesActivity : AppCompatActivity() {
         var mainClass = CitiesActivity()
 
         val cities = mainClass.cities
+
+        val codes = mainClass.codes
 
         val countries = mainClass.countries
 
@@ -72,9 +80,7 @@ class CitiesActivity : AppCompatActivity() {
         }
 
         override fun getItem(position: Int): Any {
-            val temp1 = cities[position] + "," + countries[position]
-            val temp2 = temp1.filter { !it.isWhitespace() }
-            return temp2.lowercase()
+            return codes[position] + "&" + cities[position] + ", " + countries[position]
         }
 
         override fun getItemId(position: Int): Long {

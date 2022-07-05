@@ -12,7 +12,11 @@
         <entry key="..\:/Users/wilso/AndroidStudioProjects/whether/app/src/main/res/layout/activity_main.xml" value="0.21784420289855072" />
         <entry key="..\:/Users/wilso/AndroidStudioProjects/whether/app/src/main/res/layout/citites_search.xml" value="0.27853260869565216" />
         <entry key="..\:/Users/wilso/AndroidStudioProjects/whether/app/src/main/res/layout/city_item.xml" value="0.25815217391304346" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.2" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.2" />
+        <entry key="app/src/main/res/layout/activity_cities.xml" value="0.1802536231884058" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/menu/main_menu.xml" value="0.23541666666666666" />
       </map>
     </option>
   </component>
