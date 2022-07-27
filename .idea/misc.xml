@@ -16,6 +16,10 @@
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.2" />
         <entry key="app/src/main/res/layout/activity_cities.xml" value="0.1802536231884058" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/card_view_design.xml" value="0.2566585956416465" />
+        <entry key="app/src/main/res/layout/city_item.xml" value="0.1802536231884058" />
+        <entry key="app/src/main/res/layout/fragment_blank.xml" value="0.23541666666666666" />
+        <entry key="app/src/main/res/layout/settings_item.xml" value="0.1" />
         <entry key="app/src/main/res/menu/main_menu.xml" value="0.23541666666666666" />
       </map>
     </option>

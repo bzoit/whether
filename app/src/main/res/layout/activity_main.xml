@@ -15,15 +15,16 @@
         android:layout_height="match_parent"
         android:visibility="visible">
 
-        <LinearLayout
-            android:id="@+id/headerContainer"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/addressContainer"
+                app:layout_constraintTop_toTopOf="parent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -52,22 +53,16 @@
                     android:layout_height="35dp"
                     android:layout_marginLeft="20dp"
                     android:background="@null"
+                    android:onClick="listVis"
                     android:scaleType="fitCenter"
                     android:src="@drawable/settings" />
 
             </LinearLayout>
 
-            <ListView
-                android:id="@+id/settingsList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/settingsBtn" />
-
-        </LinearLayout>
-
-        <LinearLayout
+            <LinearLayout
             android:id="@+id/overviewContainer"
             android:layout_width="match_parent"
+            app:layout_constraintTop_toBottomOf="@id/addressContainer"
             android:layout_height="wrap_content"
             android:layout_marginTop="100dp"
             android:orientation="vertical">
@@ -104,7 +99,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Low"
-                    android:textSize="30sp">
+                    android:textSize="35sp">
 
                 </TextView>
 
@@ -117,16 +112,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="High"
-                    android:textSize="30sp">
+                    android:textSize="35sp">
 
                 </TextView>
             </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
+            <LinearLayout
             android:id="@+id/detailsContainer"
             android:layout_width="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="vertical">
@@ -433,6 +429,18 @@
 
             </LinearLayout>
         </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:visibility="gone"
+                android:id="@+id/settingsList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/addressContainer"
+                tools:itemCount="2"
+                app:layout_constraintRight_toRightOf="parent"
+                tools:listitem="@layout/card_view_design" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </RelativeLayout>
     <ProgressBar

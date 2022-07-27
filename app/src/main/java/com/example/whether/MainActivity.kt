@@ -3,20 +3,21 @@ package com.example.whether
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.icu.util.ULocale.getCountry
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings.System.DATE_FORMAT
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,39 +26,65 @@ import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var shared : SharedPreferences
+    lateinit var shared: SharedPreferences
 
-    lateinit var settingsLV: ListView
-
-    lateinit var listAdapter: ArrayAdapter<String>
-
-    lateinit var settingsList: ArrayList<String>;
-
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        settingsLV = findViewById(R.id.settingsList)
+        // getting the recyclerview by its id
+        val recyclerview = findViewById<RecyclerView>(R.id.settingsList)
 
-        settingsList = ArrayList()
-        settingsList.add("Celsius")
-        settingsList.add("Fahrenheit")
+        // this creates a vertical layout Manager
+        recyclerview.layoutManager = LinearLayoutManager(this)
 
-        listAdapter = ArrayAdapter<String>(
-            this,
-            android.R.layout.simple_list_item_1,
-            settingsList
+        // ArrayList of class ItemsViewModel
+        val data = ArrayList<ItemsViewModel>()
+
+        val items = arrayOf(
+            "Celsius", "Fahrenheit"
         )
 
-        settingsLV.adapter = listAdapter
+        val systems = arrayOf(
+            "Metric", "Imperial"
+        )
+
+        for (i in 0..1) {
+            data.add(ItemsViewModel(items[i]))
+        }
+
+        // This will pass the ArrayList to our Adapter
+        val adapter = SettingsAdapter(data)
+
+        // Setting the Adapter with the recyclerview
+        recyclerview.adapter = adapter
+        shared = getSharedPreferences("CityDB", Context.MODE_PRIVATE)
+
+        adapter.setOnItemClickListener(object: SettingsAdapter.onItemClickListener {
+            override fun onItemClick(pos: Int) {
+                val edit = shared.edit()
+                edit.putString("pref" , systems[pos] as String?)
+                edit.apply()
+                finish();
+                startActivity(intent);
+            }
+        })
 
         GlobalScope.launch(Dispatchers.Default) {
-            shared = getSharedPreferences("CityDB", Context.MODE_PRIVATE)
             val code = shared.getString("code", Context.MODE_PRIVATE.toString()).toString()
             val cityText = shared.getString("cityText", Context.MODE_PRIVATE.toString()).toString()
+            var pref = shared.getString("pref", Context.MODE_PRIVATE.toString()).toString()
 
             if (code == "0") {
                 startActivity(Intent(this@MainActivity, CitiesActivity::class.java))
+            }
+
+            if(pref === "0") {
+                val edit = shared.edit()
+                edit.putString("pref" , "Imperial")
+                edit.apply()
+                pref = shared.getString("pref", Context.MODE_PRIVATE.toString()).toString()
             }
 
             val currentURL = "https://dataservice.accuweather.com/currentconditions/v1/$code?apikey=${BuildConfig.W_KEY}&details=true"
@@ -68,17 +95,24 @@ class MainActivity : AppCompatActivity() {
             val forecastJSON = URL(forecastURL).readText()
 
             val currentObj = JSONArray(currentJSON)
-            val forecastObj = JSONObject(forecastJSON)
 
             launch(Dispatchers.Main) {
-                editLayout(cityText, currentObj, forecastObj)
+                editLayout(cityText, currentObj, JSONObject(forecastJSON), pref)
             }
         }
     }
 
-    private fun editLayout(t: String, c: JSONArray, f: JSONObject) {
+    private fun editLayout(t: String, c: JSONArray, f: JSONObject, p: String) {
         val current = c.getJSONObject(0)
-        println(current)
+        val temperatureObj = current.getJSONObject("Temperature").getJSONObject(p)
+        val temp =  "${temperatureObj.getString("Value").toDouble().roundToInt()}° ${temperatureObj.getString("Unit")}"
+        val forecast = f.getJSONArray("DailyForecasts").getJSONObject(0)
+
+        val minimum = forecast.getJSONObject("Temperature").getJSONObject("Minimum").getString("Value").toDouble().roundToInt()
+        val maximum = forecast.getJSONObject("Temperature").getJSONObject("Maximum").getString("Value").toDouble().roundToInt()
+
+        val rise = forecast.getJSONObject("Sun").getString("Rise")
+        val set = forecast.getJSONObject("Sun").getString("Set")
 
         val locationView = findViewById<TextView>(R.id.location)
         val descriptionView = findViewById<TextView>(R.id.status)
@@ -93,6 +127,20 @@ class MainActivity : AppCompatActivity() {
         val pressureView = findViewById<TextView>(R.id.pressure)
 
         locationView.text = t
+        tempView.text = temp
+
+        println(p)
+
+        if (p == "Metric") {
+            lowView.text = ((minimum - 32) * 0.55555555556).roundToInt().toString() + "°"
+            highView.text = ((maximum - 32) * 0.55555555556).roundToInt().toString() + "°"
+        } else {
+            lowView.text = minimum.toString() + "°"
+            highView.text = maximum.toString() + "°"
+        }
+
+        sunriseView.text = SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(rise)
+        sunsetView.text = SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(set)
 
         val description = current.getString("WeatherText")
 
@@ -106,7 +154,12 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this@MainActivity, CitiesActivity::class.java))
     }
 
-    fun promptUser () {
-
+    fun listVis(v: View?) {
+        val list = findViewById<RecyclerView>(R.id.settingsList)
+        if(list.visibility == View.VISIBLE) {
+            list.visibility = View.GONE
+        } else {
+            list.visibility = View.VISIBLE
+        }
     }
 }
